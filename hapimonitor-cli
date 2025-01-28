@@ -1,24 +1,38 @@
 #!/bin/bash
-# CLI tool for HApiMonitor
 
 function check_updates() {
-  CURRENT_VERSION=$(hapimonitor.py --version)
-  LATEST_VERSION=$(curl -s https://api.github.com/repos/yourdawi/hapimonitor/releases/latest | grep tag_name | cut -d '"' -f 4)
-  
-  if [ "$CURRENT_VERSION" != "$LATEST_VERSION" ]; then
-    echo "New version available: $LATEST_VERSION"
-    echo "Updating..."
-    curl -sSL https://raw.githubusercontent.com/yourdawi/hapimonitor/main/install.sh | sudo bash
-  else
-    echo "Already up to date"
-  fi
+    CURRENT_VERSION=$(hapimonitor --version)
+    LATEST_VERSION=$(curl -s https://api.github.com/repos/yourdawi/hapimonitor/releases/latest | grep tag_name | cut -d '"' -f 4)
+    
+    if [ "$(printf '%s\n' "$LATEST_VERSION" "$CURRENT_VERSION" | sort -V | head -n1)" != "$LATEST_VERSION" ]; then
+        echo "New version available: $LATEST_VERSION"
+        if (whiptail --title "Update Available" --yesno "Update to $LATEST_VERSION?" 8 40); then
+            curl -sSL https://raw.githubusercontent.com/yourdawi/hapimonitor/main/install.sh | sudo bash
+        fi
+    else
+        echo "Already up to date"
+    fi
+}
+
+function uninstall() {
+    if [ "$EUID" -ne 0 ]; then
+        echo "Please run with sudo"
+        exit 1
+    fi
+    sudo bash /usr/local/bin/hapimonitor.py --uninstall
 }
 
 case "$1" in
-  "-up")
-    check_updates
-    ;;
-  *)
-    echo "Usage: hapimonitor-cli [-up]"
-    ;;
+    "-up")
+        check_updates
+        ;;
+    "-uninstall")
+        uninstall
+        ;;
+    "--version")
+        hapimonitor --version
+        ;;
+    *)
+        echo "Usage: hapimonitor-cli [-up | -uninstall | --version]"
+        ;;
 esac
