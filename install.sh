@@ -48,7 +48,7 @@ EOL
 }
 
 function create_service() {
-    if (dialog --stdout --title "Service Setup" --yesno "Enable and start hapimonitor service?" 8 78); then
+    if (dialog --ascii-lines --stdout --title "Service Setup" --yesno "Enable and start hapimonitor service?" 8 78); then
         cat > $SERVICE_FILE <<EOL
 [Unit]
 Description=HApiMonitor Service
