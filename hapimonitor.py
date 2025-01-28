@@ -5,11 +5,10 @@ import socket
 import psutil
 import paho.mqtt.client as mqtt
 import yaml
-import os
 from pathlib import Path
 
 CONFIG_PATH = "/etc/hapimonitor/config.yaml"
-VERSION = "1.2.0"
+VERSION = "1.4.0"
 
 class HApiMonitor:
     def __init__(self):
@@ -59,13 +58,27 @@ class HApiMonitor:
         client.loop_start()
         return client
 
+    def get_cpu_temp(self):
+        try:
+            with open('/sys/class/thermal/thermal_zone0/temp', 'r') as f:
+                temp = int(f.read()) / 1000
+            return temp
+        except:
+            return 0
+
     def publish_discovery(self):
         device = self.get_device_info()
 
         sensors = [
             ("cpu_usage", "CPU Usage", "%", "mdi:speedometer"),
+            ("cpu_temp", "CPU Temperature", "°C", "mdi:thermometer"),
+            ("cpu_max", "CPU Max", "%", "mdi:speedometer"),
             ("ram_usage", "RAM Usage", "%", "mdi:memory"),
+            ("ram_used", "RAM Used", "MB", "mdi:memory"),
+            ("ram_max", "RAM Total", "MB", "mdi:memory"),
             ("disk_usage", "Disk Usage", "%", "mdi:harddisk"),
+            ("disk_used", "Disk Used", "GB", "mdi:harddisk"),
+            ("disk_max", "Disk Total", "GB", "mdi:harddisk"),
             ("status", "Status", "", "mdi:heart-pulse")
         ]
 
@@ -88,10 +101,19 @@ class HApiMonitor:
         self.discovery_sent = True
 
     def get_system_stats(self):
+        mem = psutil.virtual_memory()
+        disk = psutil.disk_usage('/')
+        
         return {
             "cpu_usage": psutil.cpu_percent(),
-            "ram_usage": psutil.virtual_memory().percent,
-            "disk_usage": psutil.disk_usage('/').percent,
+            "cpu_temp": self.get_cpu_temp(),
+            "cpu_max": 100,
+            "ram_usage": mem.percent,
+            "ram_used": round(mem.used / 1024 / 1024, 1),
+            "ram_max": round(mem.total / 1024 / 1024, 1),
+            "disk_usage": disk.percent,
+            "disk_used": round(disk.used / 1024 / 1024 / 1024, 1),
+            "disk_max": round(disk.total / 1024 / 1024 / 1024, 1),
             "status": "online"
         }
 
