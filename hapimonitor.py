@@ -8,7 +8,7 @@ import yaml
 from pathlib import Path
 
 CONFIG_PATH = "/etc/hapimonitor/config.yaml"
-VERSION = "1.4.0"
+VERSION = "0.0.2"
 
 class HApiMonitor:
     def __init__(self):
