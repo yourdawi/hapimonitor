@@ -25,17 +25,17 @@ function uninstall() {
 
 function config_mqtt() {
     if [ -f "$CONFIG_FILE" ]; then
-        dialog --stdout --title "Existing Configuration" --yesno "Existing configuration found. Keep it?" 8 40
+        dialog --ascii-lines --stdout --title "Existing Configuration" --yesno "Existing configuration found. Keep it?" 8 40
         response=$?
         if [ $response -eq 0 ]; then
             return
         fi
     fi
 
-    MQTT_BROKER=$(dialog --stdout --inputbox "Enter MQTT Broker address:" 8 40 "localhost")
-    MQTT_PORT=$(dialog --stdout --inputbox "Enter MQTT Broker port:" 8 40 "1883")
-    MQTT_USER=$(dialog --stdout --inputbox "Enter MQTT username:" 8 40 "")
-    MQTT_PASS=$(dialog --stdout --passwordbox "Enter MQTT password:" 8 40 "")
+    MQTT_BROKER=$(dialog --ascii-lines --stdout --inputbox "Enter MQTT Broker address:" 8 40 "localhost")
+    MQTT_PORT=$(dialog --ascii-lines --stdout --inputbox "Enter MQTT Broker port:" 8 40 "1883")
+    MQTT_USER=$(dialog --ascii-lines --stdout --inputbox "Enter MQTT username:" 8 40 "")
+    MQTT_PASS=$(dialog --ascii-lines --stdout --passwordbox "Enter MQTT password:" 8 40 "")
 
     cat > $CONFIG_FILE <<EOL
 mqtt:
@@ -106,4 +106,4 @@ if [ "$EUID" -ne 0 ]; then
 fi
 
 main_install
-dialog --stdout --title "Installation Complete" --msgbox "HApiMonitor successfully installed!\n\nUse 'hapimonitor-cli -uninstall' to remove." 10 40
+dialog --ascii-lines --stdout --title "Installation Complete" --msgbox "HApiMonitor successfully installed!\n\nUse 'hapimonitor-cli -uninstall' to remove." 10 40
