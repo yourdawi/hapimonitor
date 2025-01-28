@@ -27,6 +27,15 @@ Just run
 curl -sSL https://raw.githubusercontent.com/yourdawi/hapimonitor/main/install.sh | sudo bash
 ```
 The installer will ask for any informations, like your MQTT Broker IP, Port, Username, Password
+
+#### What do i need?
+You need a MQTT Broker like Moqsquitto.
+You can install it through the Home Assistant Addon Store (HAOS).
+
+#### Why sudo?
+It is just for the automated installer, so it can install all required packages.
+You can still download and run the script by yourself.
+
 #### hapimonitor-cli?
 
 With the hapimonitor-cli command you can run commands.
