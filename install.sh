@@ -2,7 +2,7 @@
 set -e
 
 GITHUB_REPO="https://github.com/yourdawi/hapimonitor"
-VERSION="1.3.1"
+VERSION="0.0.1"
 CONFIG_FILE="/etc/hapimonitor/config.yaml"
 SERVICE_FILE="/etc/systemd/system/hapimonitor.service"
 INSTALL_DIR="/usr/local/bin"
