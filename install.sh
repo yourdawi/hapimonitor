@@ -25,17 +25,17 @@ function uninstall() {
 
 function config_mqtt() {
     if [ -f "$CONFIG_FILE" ]; then
-        dialog --title "Existing Configuration" --yesno "Existing configuration found. Keep it?" 8 40
+        dialog --stdout --title "Existing Configuration" --yesno "Existing configuration found. Keep it?" 8 40
         response=$?
         if [ $response -eq 0 ]; then
             return
         fi
     fi
 
-    MQTT_BROKER=$(dialog --inputbox "Enter MQTT Broker address:" 8 40 "localhost" 3>&1 1>&2 2>&3 3>&-)
-    MQTT_PORT=$(dialog --inputbox "Enter MQTT Broker port:" 8 40 "1883" 3>&1 1>&2 2>&3 3>&-)
-    MQTT_USER=$(dialog --inputbox "Enter MQTT username:" 8 40 "" 3>&1 1>&2 2>&3 3>&-)
-    MQTT_PASS=$(dialog --passwordbox "Enter MQTT password:" 8 40 "" 3>&1 1>&2 2>&3 3>&-)
+    MQTT_BROKER=$(dialog --stdout --inputbox "Enter MQTT Broker address:" 8 40 "localhost")
+    MQTT_PORT=$(dialog --stdout --inputbox "Enter MQTT Broker port:" 8 40 "1883")
+    MQTT_USER=$(dialog --stdout --inputbox "Enter MQTT username:" 8 40 "")
+    MQTT_PASS=$(dialog --stdout --passwordbox "Enter MQTT password:" 8 40 "")
 
     cat > $CONFIG_FILE <<EOL
 mqtt:
@@ -48,7 +48,7 @@ EOL
 }
 
 function create_service() {
-    if (whiptail --title "Service Setup" --yesno "Enable and start hapimonitor service?" 8 78); then
+    if (dialog --stdout --title "Service Setup" --yesno "Enable and start hapimonitor service?" 8 78); then
         cat > $SERVICE_FILE <<EOL
 [Unit]
 Description=HApiMonitor Service
@@ -106,4 +106,4 @@ if [ "$EUID" -ne 0 ]; then
 fi
 
 main_install
-whiptail --title "Installation Complete" --msgbox "HApiMonitor successfully installed!\n\nUse 'hapimonitor-cli -uninstall' to remove." 10 40
+dialog --stdout --title "Installation Complete" --msgbox "HApiMonitor successfully installed!\n\nUse 'hapimonitor-cli -uninstall' to remove." 10 40
