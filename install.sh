@@ -65,7 +65,7 @@ EOL
         systemctl daemon-reload
         systemctl enable hapimonitor
         systemctl start hapimonitor
-        fi
+    fi
 }
 
 function download_files() {
