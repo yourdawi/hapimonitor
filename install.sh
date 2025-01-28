@@ -89,6 +89,7 @@ function main_install() {
     config_mqtt
     create_service
 }
+
 if [ "$1" = "--uninstall" ]; then
     if [ "$EUID" -ne 0 ]; then
         echo "Please run uninstall as root"
