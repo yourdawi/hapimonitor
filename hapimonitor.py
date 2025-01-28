@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/etc/hapimonitor/venv/bin/python3
 import time
 import json
 import socket
