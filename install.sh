@@ -53,7 +53,7 @@ Description=HApiMonitor Service
 After=network.target
 
 [Service]
-ExecStart=$INSTALL_DIR/hapimonitor.py
+ExecStart=/bin/bash -c 'source /etc/hapimonitor/venv/bin/activate && exec python3 $INSTALL_DIR/hapimonitor.py'
 Restart=always
 RestartSec=10
 User=root
@@ -65,8 +65,7 @@ EOL
         systemctl daemon-reload
         systemctl enable hapimonitor
         systemctl start hapimonitor
-    fi
-}
+    
 
 function download_files() {
     echo "Downloading required files..."
@@ -80,14 +79,15 @@ function download_files() {
 function main_install() {
     apt-get update
     apt-get install -y python3 python3-pip python3-venv whiptail curl
-    python3 -m pip install psutil paho-mqtt pyyaml
+    python3 -m venv /etc/hapimonitor/venv
+    source /etc/hapimonitor/venv/bin/activate
+    /etc/hapimonitor/venv/bin/pip install psutil paho-mqtt pyyaml
 
     mkdir -p /etc/hapimonitor
     download_files
     config_mqtt
     create_service
 }
-
 if [ "$1" = "--uninstall" ]; then
     if [ "$EUID" -ne 0 ]; then
         echo "Please run uninstall as root"
