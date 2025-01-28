@@ -39,7 +39,10 @@ class HApiMonitor:
         }
 
     def setup_mqtt(self):
-        client = mqtt.Client(client_id=f"hapimonitor_{self.hostname}")
+        client = mqtt.Client(
+            client_id=f"hapimonitor_{self.hostname}",
+            callback_api_version=mqtt.CallbackAPIVersion.VERSION2
+        )
         client.username_pw_set(self.config['mqtt']['username'], self.config['mqtt']['password'])
         
         client.will_set(

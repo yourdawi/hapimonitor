@@ -1,16 +1,36 @@
 #!/bin/bash
 
 function check_updates() {
-    CURRENT_VERSION=$(hapimonitor --version)
-    LATEST_VERSION=$(curl -s https://api.github.com/repos/yourdawi/hapimonitor/releases/latest | grep tag_name | cut -d '"' -f 4)
+    echo "Checking for updates..."
     
-    if [ "$(printf '%s\n' "$LATEST_VERSION" "$CURRENT_VERSION" | sort -V | head -n1)" != "$LATEST_VERSION" ]; then
+    # Aktuelle Version des Skripts
+    CURRENT_VERSION=$(hapimonitor --version 2>&1 | grep -oP 'v\d+\.\d+\.\d+')
+    if [ -z "$CURRENT_VERSION" ]; then
+        echo "Could not determine current version."
+        exit 1
+    fi
+
+    # Letzte Version von GitHub
+    LATEST_VERSION=$(curl -s https://api.github.com/repos/yourdawi/hapimonitor/releases/latest | grep tag_name | cut -d '"' -f 4)
+    if [ -z "$LATEST_VERSION" ]; then
+        echo "Could not fetch latest version from GitHub."
+        exit 1
+    fi
+
+    echo "Current version: $CURRENT_VERSION"
+    echo "Latest version: $LATEST_VERSION"
+
+    if [ "$CURRENT_VERSION" != "$LATEST_VERSION" ]; then
         echo "New version available: $LATEST_VERSION"
         if (whiptail --title "Update Available" --yesno "Update to $LATEST_VERSION?" 8 40); then
+            echo "Updating..."
             curl -sSL https://raw.githubusercontent.com/yourdawi/hapimonitor/main/install.sh | sudo bash
+            echo "Update complete!"
+        else
+            echo "Update canceled."
         fi
     else
-        echo "Already up to date"
+        echo "Already up to date."
     fi
 }
 
@@ -19,7 +39,14 @@ function uninstall() {
         echo "Please run with sudo"
         exit 1
     fi
-    sudo bash /usr/local/bin/hapimonitor.py --uninstall
+    
+    # Verwende die install.sh-Datei für die Deinstallation
+    if [ -f "/usr/local/bin/hapimonitor.py" ]; then
+        echo "Running uninstall script..."
+        curl -sSL https://raw.githubusercontent.com/yourdawi/hapimonitor/main/install.sh | sudo bash -s -- --uninstall
+    else
+        echo "HApiMonitor is not installed."
+    fi
 }
 
 case "$1" in
