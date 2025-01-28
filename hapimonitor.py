@@ -8,7 +8,7 @@ import yaml
 from pathlib import Path
 
 CONFIG_PATH = "/etc/hapimonitor/config.yaml"
-VERSION = "0.0.1"
+VERSION = "0.0.2"
 
 class HApiMonitor:
     def __init__(self):
@@ -68,6 +68,10 @@ class HApiMonitor:
             return temp
         except:
             return 0
+        
+    def get_cpu_max_freq(self):
+        return psutil.cpu_freq().max
+
 
     def publish_discovery(self):
         device = self.get_device_info()
@@ -75,7 +79,7 @@ class HApiMonitor:
         sensors = [
             ("cpu_usage", "CPU Usage", "%", "mdi:speedometer"),
             ("cpu_temp", "CPU Temperature", "°C", "mdi:thermometer"),
-            ("cpu_max", "CPU Max", "%", "mdi:speedometer"),
+            ("cpu_max", "CPU Max", "MHz", "mdi:speedometer"),
             ("ram_usage", "RAM Usage", "%", "mdi:memory"),
             ("ram_used", "RAM Used", "MB", "mdi:memory"),
             ("ram_max", "RAM Total", "MB", "mdi:memory"),
@@ -110,7 +114,7 @@ class HApiMonitor:
         return {
             "cpu_usage": psutil.cpu_percent(),
             "cpu_temp": self.get_cpu_temp(),
-            "cpu_max": 100,
+            "cpu_max": self.get_cpu_max_freq(),
             "ram_usage": mem.percent,
             "ram_used": round(mem.used / 1024 / 1024, 1),
             "ram_max": round(mem.total / 1024 / 1024, 1),
